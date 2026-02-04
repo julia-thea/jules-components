@@ -1,0 +1,23 @@
+ES7+ React/Redux/React-Native Snippets (VS Code / Cursor)
+
+COMPONENTS
+rafce    React Arrow Function Component Export
+rfce     React Function Component Export
+rfc      React Function Component
+rcc      React Class Component
+
+HOOKS
+usf      useState with function
+uef      useEffect
+ucb      useCallback
+umemo    useMemo
+uref     useRef
+uctx     useContext
+
+IMPORTS
+imr      import React
+imrs     import React, { useState }
+imrse    import React, { useState, useEffect }
+
+Type shortcut + Tab to expand
+
