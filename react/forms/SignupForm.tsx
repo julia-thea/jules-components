@@ -1,0 +1,171 @@
+/**
+ * SignupForm Component
+ * 
+ * A styled signup form with client-side validation.
+ * 
+ * Dependencies:
+ * - React 18+
+ * - Tailwind CSS with custom colors: navy, ivory, slate, steel, silver
+ * 
+ * Tailwind config required:
+ * colors: {
+ *   navy: '#1E3A5F',
+ *   slate: '#334155',
+ *   steel: '#64748B',
+ *   ivory: '#FAFBFC',
+ *   silver: '#E2E8F0',
+ * }
+ * 
+ * Usage:
+ * <SignupForm 
+ *   apiEndpoint="/api/auth/signup"
+ *   onSuccess={() => router.push('/login')}
+ *   loginUrl="/login"
+ * />
+ */
+
+'use client';
+import { useState } from 'react';
+
+interface SignupFormProps {
+  apiEndpoint?: string;
+  onSuccess?: () => void;
+  loginUrl?: string;
+}
+
+function validateEmail(email: string): string {
+  if (!email) return 'Email is required';
+  if (!email.includes('@') || !email.includes('.')) return 'Invalid email format';
+  return '';
+}
+
+function validatePassword(password: string): string {
+  if (!password) return 'Password is required';
+  if (password.length < 8) return 'Password must be at least 8 characters';
+  return '';
+}
+
+export default function SignupForm({ 
+  apiEndpoint = '/api/auth/signup',
+  onSuccess,
+  loginUrl = '/login'
+}: SignupFormProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setFieldErrors({ email: emailError, password: passwordError });
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          window.location.href = loginUrl;
+        }
+      } else {
+        const data = await response.json();
+        setError(data.error || 'Signup failed');
+      }
+    } catch (err) {
+      setError('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <h1 className="text-3xl font-bold text-navy text-center mb-8">
+          Create Your Account
+        </h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-slate mb-2">
+              Email
+            </label>
+            <input
+              id="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              type="email"
+              className={`w-full px-4 py-3 rounded-xl border ${
+                fieldErrors.email 
+                  ? 'border-red-500 focus:ring-red-500' 
+                  : 'border-silver focus:border-navy focus:ring-navy'
+              } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
+              placeholder="you@example.com"
+            />
+            {fieldErrors.email && (
+              <p className="mt-2 text-sm text-red-500">{fieldErrors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-slate mb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              type="password"
+              className={`w-full px-4 py-3 rounded-xl border ${
+                fieldErrors.password 
+                  ? 'border-red-500 focus:ring-red-500' 
+                  : 'border-silver focus:border-navy focus:ring-navy'
+              } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
+              placeholder="At least 8 characters"
+            />
+            {fieldErrors.password && (
+              <p className="mt-2 text-sm text-red-500">{fieldErrors.password}</p>
+            )}
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full px-7 py-3 bg-navy text-ivory text-sm font-semibold rounded-xl hover:bg-slate hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          >
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
+
+          {error && (
+            <p className="text-center text-sm text-red-500">{error}</p>
+          )}
+
+          <p className="text-center text-sm text-steel">
+            Already have an account?{' '}
+            <a href={loginUrl} className="text-navy font-medium hover:underline">
+              Log in
+            </a>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
