@@ -1,0 +1,91 @@
+SERVER COMPONENT (default — no directive needed)
+=================================================
+Runs on: Server only, never reaches the browser
+Use when: Displaying data, layouts, pages that don't need interaction
+
+Can do:
+  - Query database directly (prisma.list.findMany())
+  - Fetch APIs (await fetch(...))
+  - Access environment variables (process.env.SECRET)
+  - Import and render Client Components
+  - Pass data to Client Components via props
+  - Use async/await in the component function
+
+Cannot do:
+  - useState, useEffect, useRef, or any React hook
+  - onClick, onChange, onSubmit, or any event handler
+  - Access browser APIs (window, localStorage, document)
+  - Use 'use client' libraries (next-auth/react, lucide-react icons with events)
+
+Example: A page that fetches lists from the database and displays them.
+
+
+CLIENT COMPONENT ('use client' at top of file)
+=================================================
+Runs on: Server first (for HTML), then hydrates in the browser
+Use when: User needs to interact with it
+
+Can do:
+  - useState, useEffect, useRef, useActionState, useOptimistic
+  - onClick, onChange, onSubmit, onKeyDown — all event handlers
+  - Access browser APIs (window, localStorage)
+  - Call Server Actions
+  - Import other Client Components
+
+Cannot do:
+  - Query database directly (no prisma calls)
+  - Use async/await in the component function
+  - Access server-only environment variables
+
+Example: A form with inputs, validation, and a submit button.
+
+
+SERVER ACTION ('use server' at top of file or inside a function)
+=================================================
+Runs on: Server only, called from Client or Server Components
+Use when: Mutating data (create, update, delete)
+
+Can do:
+  - Query/mutate database (prisma.item.create())
+  - Validate input
+  - revalidatePath() to refresh page data
+  - redirect() to navigate after mutation
+  - Return data back to the calling component (errors, success status)
+
+Cannot do:
+  - Render UI
+  - Use React hooks
+  - Access browser APIs
+
+Example: A function that creates a new item in the database and refreshes the page.
+
+
+COMMON PATTERN
+=================================================
+Server Component (page)
+  |-- fetches data from database
+  |-- renders static content (headings, lists, layout)
+  |-- passes data as props to Client Component
+  |
+  └── Client Component (form/interactive widget)
+        |-- manages user input with useState
+        |-- handles events (onClick, onSubmit)
+        |-- calls Server Action on submit
+        |
+        └── Server Action
+              |-- validates input
+              |-- writes to database
+              |-- calls revalidatePath()
+              |-- returns result or redirects
+
+
+DECISION RULE
+=================================================
+Ask: "Does this component need hooks or event handlers?"
+  YES → Client Component ('use client')
+  NO  → Server Component (default, no directive)
+
+Ask: "Am I writing to the database?"
+  YES → Server Action ('use server')
+  NO  → Not needed
+

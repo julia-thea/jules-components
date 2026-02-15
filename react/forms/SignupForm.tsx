@@ -25,7 +25,7 @@
  */
 
 'use client';
-import { useState } from 'react';
+import { useState } from 'React';
 
 interface SignupFormProps {
   apiEndpoint?: string;
@@ -45,7 +45,7 @@ function validatePassword(password: string): string {
   return '';
 }
 
-export default function SignupForm({ 
+export default function SignupForm({
   apiEndpoint = '/api/auth/signup',
   onSuccess,
   loginUrl = '/login'
@@ -55,7 +55,7 @@ export default function SignupForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
-  
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const emailError = validateEmail(email);
@@ -101,7 +101,7 @@ export default function SignupForm({
         <h1 className="text-3xl font-bold text-navy text-center mb-8">
           Create Your Account
         </h1>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate mb-2">
@@ -112,11 +112,10 @@ export default function SignupForm({
               value={email}
               onChange={e => setEmail(e.target.value)}
               type="email"
-              className={`w-full px-4 py-3 rounded-xl border ${
-                fieldErrors.email 
-                  ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-silver focus:border-navy focus:ring-navy'
-              } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
+              className={`w-full px-4 py-3 rounded-xl border ${fieldErrors.email
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-silver focus:border-navy focus:ring-navy'
+                } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
               placeholder="you@example.com"
             />
             {fieldErrors.email && (
@@ -133,11 +132,10 @@ export default function SignupForm({
               value={password}
               onChange={e => setPassword(e.target.value)}
               type="password"
-              className={`w-full px-4 py-3 rounded-xl border ${
-                fieldErrors.password 
-                  ? 'border-red-500 focus:ring-red-500' 
-                  : 'border-silver focus:border-navy focus:ring-navy'
-              } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
+              className={`w-full px-4 py-3 rounded-xl border ${fieldErrors.password
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-silver focus:border-navy focus:ring-navy'
+                } focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all`}
               placeholder="At least 8 characters"
             />
             {fieldErrors.password && (
@@ -145,8 +143,8 @@ export default function SignupForm({
             )}
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full px-7 py-3 bg-navy text-ivory text-sm font-semibold rounded-xl hover:bg-slate hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
           >
